@@ -1,4 +1,4 @@
-Development Log for Software Design: " Power Quality Waveform Analyser” 
+#Development Log for Software Design: " Power Quality Waveform Analyser” 
 
 Project Title: Power Quality Waveform Analyser
 Date Started: March 24, 2026 
@@ -8,9 +8,7 @@ Author: Kashyap Shyni Remesh.
 
  
 
-Shape 
-
-Structure Chart 
+##Shape Structure Chart 
 
 A structure chart is created to visually represent the different modules in the system. Below is a simple structure chart of the system. 
 
@@ -18,7 +16,7 @@ Insert Structure Chart Here
 
  
 
-2. Program Design (Pseudocode/Flowcharts) 
+##Program Design (Pseudocode/Flowcharts) 
 
 Pseudocode Example for "Function or block as appropriate" 
 
@@ -26,7 +24,7 @@ Version x.x.
 
  
 
-3. Function Description 
+##Function Description 
 
 Each function in the system is described below: 
 
@@ -38,7 +36,7 @@ Input Parameters: List acceptable data types and ranges here and order.
 
 Returns: What the output returns, and where applicable, what it means. 
 
-4. Evidence of Unit Testing 
+##Evidence of Unit Testing 
 
 Unit Testing Function Name Version X.X: 
 
@@ -60,7 +58,8 @@ Edge cases, such as X, were tested (not) successfully.
 
 List any things needing resolving in future versions 
 
-5. Evidence of Integration Testing 
+
+##Evidence of Integration Testing 
 
 Integration Test: 
 
@@ -84,7 +83,7 @@ The system correctly integrates Function name1 x.x and Function name2 x.x.
 
 The following still needs to be resolved/implemented…. 
 
-5. Evidence of Scenario Testing 
+##Evidence of Scenario Testing 
 
 Software/project version X.x  
 
@@ -108,7 +107,7 @@ Do something else here
 
 4.2 event - Failed. 
 
-6. Evidence of Version Control 
+##Evidence of Version Control 
 
 The project was managed using Git for version control. Below are the key Git commands used in the development process: 
 
@@ -134,7 +133,7 @@ GitHub Repository:
 
 GitHub Repository Link 
 
-7. Full Code (in Zip File) uploaded externally to Blackboard on 01/06/25 
+##Full Code (in Zip File) uploaded externally to Blackboard on 01/06/25 
 
 Student_submission_name.zip 
 
@@ -160,7 +159,7 @@ Integration Test Logs (test_logs.txt)
 
  
 
-References 
+##References 
 
 C Programming Language or specific instance such as….: 
 

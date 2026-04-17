@@ -4,16 +4,36 @@
 #include <math.h>
 #include "Waveform.h"
 
+/* compute_rms(samples,n){}
+
+compute_peaks(samples,n){}
+
+compute_dc_offset(samples,n){}
+
+count_clipped(samples,n,limit){}
+
+check_compliance(rms,nominal){}
+
+compute_std_dev(samples,n){}*/
+
 int main(void){
 
     printf("----------------------------------------------------\n");
-    FILE *file = fopen("power_quality_log.csv","r");
+
+    //takes user input for the file path and uses that as the argument for fopen
+    char filePath[300];
+    printf("Enter the file path (use ../\"file\" for file in main project folder)\n");
+    scanf("%s",filePath);
+
+    FILE *file = fopen(filePath,"r");
 
     //Checks for error when opening the file
     if (file == NULL){
-        printf("Error opening file!\n");
+        printf("Error opening file!\nCheck the file path entered!\n");
         exit(-1);
     }
+
+    //NO ERROR :)
     printf("Opening the file!!!!!!!!\n");
 
     WaveformSample Log[1000];

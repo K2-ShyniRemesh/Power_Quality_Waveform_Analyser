@@ -44,17 +44,17 @@ int main(void){
 
         printf("========================================================================================================================\n");
 
-        if (rmsA<=253 && rmsA>=207) {
+        if (rmsA>=253 | rmsA<=207) {
             printf("Phase A RMS: ~%.19lf V (Out of band)\n",rmsA);
         }
         else{printf("Phase A RMS: ~%.19lf V (COMPLIANT)\n",rmsA);}
 
-        if (rmsB<=253 && rmsB>=207) {
+        if (rmsB>=253 | rmsB<=207) {
             printf("Phase B RMS: ~%.19lf V (Out of band)\n",rmsB);
         }
         else{printf("Phase B RMS: ~%.19lf V (COMPLIANT)\n",rmsB);}
 
-        if (rmsC<=253 && rmsC>=207) {
+        if (rmsC>=253 | rmsC<=207) {
             printf("Phase C RMS: ~%.19lf V (Out of band)\n",rmsC);
         }
         else{ printf("Phase C RMS: ~%.19lf V (COMPLIANT)\n",rmsC);}

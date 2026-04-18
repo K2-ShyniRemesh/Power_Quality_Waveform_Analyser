@@ -1,82 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <math.h>
 #include "waveform.h"
-
-int checkFormat(FILE *file){
-
-    /*Stores the Headers here so that it will not be read by the
-      fscanf function which cannot convert that string to float*/
-    char storeHeader[109];//according to the number of characters in the combined headings
-    if (fgets(storeHeader,sizeof(storeHeader),file)==NULL) {
-        printf("Error reading file!\n");
-        return -1;
-    }
-
-    WaveformSample Log[7];
-    int read=0;//stores number of columns read successfully
-    int lines=0;//number of fields that have been read
-
-    //Checks the first few lines
-    while (lines<5){
-        read=fscanf(file,
-                    "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf\n",
-                    &Log[lines].timestamp,
-                    &Log[lines].phase_A_voltage,
-                    &Log[lines].phase_B_voltage,
-                    &Log[lines].phase_C_voltage,
-                    &Log[lines].line_current,
-                    &Log[lines].frequency,
-                    &Log[lines].power_factor,
-                    &Log[lines].thd_percent);
-
-        //if one row is read without error read increment by 1
-        if (read ==8){
-            printf("Line%d: Time=%.4lf, V_A=%.6lf, V_B=%.6lf, V_C=%.6lf, L_C=%.5lf, FQ=%.4lf, P_F=%.4lf, THD=%.4lf \n",
-                lines+1,
-                Log[lines].timestamp,
-                Log[lines].phase_A_voltage,
-                Log[lines].phase_B_voltage,
-                Log[lines].phase_C_voltage,
-                Log[lines].line_current,
-                Log[lines].frequency,
-                Log[lines].power_factor,
-                Log[lines].thd_percent);
-                lines++;
-        }
-
-        //error e.g. the number of fields in a row is not 8
-        if (read !=8 ){
-            printf("The file is not formatted correctly!\n");
-            exit(-1);
-        }
-
-        //some other error with file
-        if (ferror(file)){
-            printf("Error reading file!\n");
-            exit(-1);
-        }
-    }
-    printf("\nFile format verified!\n");
-    return 0;
-}
-
-
- //compute_rms(samples,n){}
-
-
-
-/*compute_peaks(samples,n){}
-
-compute_dc_offset(samples,n){}
-
-count_clipped(samples,n,limit){}
-
-check_compliance(rms,nominal){}
-
-compute_std_dev(samples,n){}*/
-
+#include "io.h"
 
 int main(void){
 
@@ -93,18 +18,61 @@ int main(void){
         printf("Error opening file!\nCheck the file path entered!\n");
         exit(-1);
     }
-    //NO ERROR :)
+    //NO ERROR
     printf("Opening the file!\n\n");
 
-    checkFormat(file);
+    WaveformSample *Log = malloc(1000 * sizeof(WaveformSample));
+
+    //Logs==NULL can be caused if there is insufficient memory to allocate
+    if (Log == NULL) {
+        printf("Memory allocation failed!\n");
+        fclose(file);
+        return -1;
+    }
+
+    if (readingCheck(file,Log)==0){
+        int rows=1000;
+
+        int phase=0;
+        double rmsA=compute_rms(Log,rows,phase);
+
+        phase=1;
+        double rmsB=compute_rms(Log,rows,phase);
+
+        phase=2;
+        double rmsC=compute_rms(Log,rows,phase);
+
+        printf("========================================================================================================================\n");
+
+        if (rmsA<=253 && rmsA>=207) {
+            printf("Phase A RMS: ~%.19lf V (Out of band)\n",rmsA);
+        }
+        else{printf("Phase A RMS: ~%.19lf V (COMPLIANT)\n",rmsA);}
+
+        if (rmsB<=253 && rmsB>=207) {
+            printf("Phase B RMS: ~%.19lf V (Out of band)\n",rmsB);
+        }
+        else{printf("Phase B RMS: ~%.19lf V (COMPLIANT)\n",rmsB);}
+
+        if (rmsC<=253 && rmsC>=207) {
+            printf("Phase C RMS: ~%.19lf V (Out of band)\n",rmsC);
+        }
+        else{ printf("Phase C RMS: ~%.19lf V (COMPLIANT)\n",rmsC);}
+
+
+
+
+
+        printf("========================================================================================================================\n");
+    }
 
     printf("------------------------------------------------------------------------------------------------------------------------\n");
 
 
 
 
-
-
+    fclose(file);
+    free(Log);
     return 0;
 }
 

@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "waveform.h"
 #include "io.h"
+#include<math.h>
 
 int main(void){
 
@@ -35,31 +36,37 @@ int main(void){
 
         int phase=0;
         double rmsA=compute_rms(Log,rows,phase);
+        double peak_to_peak_A=compute_peak_to_peak(Log,rows,phase);
 
         phase=1;
         double rmsB=compute_rms(Log,rows,phase);
+        double peak_to_peak_B=compute_peak_to_peak(Log,rows,phase);
 
         phase=2;
         double rmsC=compute_rms(Log,rows,phase);
+        double peak_to_peak_C=compute_peak_to_peak(Log,rows,phase);
 
         printf("========================================================================================================================\n");
 
-        if (rmsA>=253 | rmsA<=207) {
+        if (rmsA>=253 || rmsA<=207) {
             printf("Phase A RMS: ~%.19lf V (Out of band)\n",rmsA);
         }
         else{printf("Phase A RMS: ~%.19lf V (COMPLIANT)\n",rmsA);}
 
-        if (rmsB>=253 | rmsB<=207) {
+        if (rmsB>=253 || rmsB<=207) {
             printf("Phase B RMS: ~%.19lf V (Out of band)\n",rmsB);
         }
         else{printf("Phase B RMS: ~%.19lf V (COMPLIANT)\n",rmsB);}
 
-        if (rmsC>=253 | rmsC<=207) {
+        if (rmsC>=253 || rmsC<=207) {
             printf("Phase C RMS: ~%.19lf V (Out of band)\n",rmsC);
         }
         else{ printf("Phase C RMS: ~%.19lf V (COMPLIANT)\n",rmsC);}
 
 
+        printf("Phase A peak-to-peak: ~%lf V\n",peak_to_peak_A);
+        printf("Phase B peak-to-peak: ~%lf V\n",peak_to_peak_B);
+        printf("Phase C peak-to-peak: ~%lf V\n",peak_to_peak_C);
 
 
 
@@ -75,6 +82,3 @@ int main(void){
     free(Log);
     return 0;
 }
-
-
-

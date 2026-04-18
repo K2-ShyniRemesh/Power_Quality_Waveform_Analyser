@@ -9,21 +9,31 @@ double compute_rms(const WaveformSample *Log, int rows,int phase) {
  for (int i = 0; i < rows; i++){
 
   double currentValue=0;
-  if (phase==0){ currentValue = Log[i].phase_A_voltage;}
-  else if (phase==1){ currentValue = Log[i].phase_B_voltage;}
-  else if (phase==2){ currentValue = Log[i].phase_C_voltage;}
+  currentValue = Log[i].phase_voltage[phase];
   sumSq += currentValue * currentValue;
  }
  return sqrt(sumSq/rows);
 
 }
 
-/*compute_peaks(samples,n){}
+double compute_peak_to_peak(const WaveformSample *Log,int rows,int phase) {
+ double lowest=0,highest=0;
 
-compute_dc_offset(samples,n){}
+ for (int i = 0; i < rows; i++) {
+  if (Log[i].phase_voltage[phase]<lowest) {
+   lowest = Log[i].phase_voltage[phase];
+  }
+  if (Log[i].phase_voltage[phase]>highest) {
+   highest = Log[i].phase_voltage[phase];
+  }
+ }
+ return sqrt(highest*highest)+sqrt(lowest*lowest);
+}
 
-count_clipped(samples,n,limit){}
+ /*compute_dc_offset(samples,n){}
 
-check_compliance(rms,nominal){}
+ count_clipped(samples,n,limit){}
 
-compute_std_dev(samples,n){}*/
+ check_compliance(rms,nominal){}
+
+ compute_std_dev(samples,n){}*/

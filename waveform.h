@@ -4,14 +4,14 @@
 
 typedef struct {
     double timestamp;
-    double phase_A_voltage,phase_B_voltage,phase_C_voltage;
+    double phase_voltage[3];
     double line_current,frequency,power_factor,thd_percent;
 } WaveformSample;
 
 
 double compute_rms(const WaveformSample *Log, int n,int phase);
 
-double compute_peaks(const WaveformSample *Log,int n);
+double compute_peak_to_peak(const WaveformSample *Log,int n,int phase);
 
 double compute_dc_offset(const WaveformSample *Log,int n);
 

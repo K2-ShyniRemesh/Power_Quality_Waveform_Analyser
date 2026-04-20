@@ -15,7 +15,7 @@ int readingCheck(FILE *file,WaveformSample *Log){
     int read=0;//stores number of columns read successfully
     int lines=0;//number of fields that have been read
 
-    //Checks the first few lines
+    //stores data to the instance of the struct WaveformSample created
     while (lines<1000){
         read=fscanf(file,
                     "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf\n",
@@ -30,6 +30,7 @@ int readingCheck(FILE *file,WaveformSample *Log){
 
         //if one row is read without error read increment by 1
         if (read ==8){
+            //outputs the first few
             if (lines<6){printf("Line%d: Time=%.4lf, V_A=%.6lf, V_B=%.6lf, V_C=%.6lf, L_C=%.5lf, FQ=%.4lf, P_F=%.4lf, THD=%.4lf \n",
                 lines+1,
                 Log[lines].timestamp,
@@ -58,3 +59,27 @@ int readingCheck(FILE *file,WaveformSample *Log){
     printf("\nFile format verified!\n");
     return 0;
 }
+
+
+
+/*
+//Creates a new txt file and writes the below outputs onto it
+FILE *Output = fopen("../output.txt","w");
+
+fprintf(Output,"Phase A RMS:");
+fprintf(Output,"\nPhase A Peak-to-Peak:");
+fprintf(Output,"\nPhase A DC offset:");
+fprintf(Output,"\nPhase B RMS");
+fprintf(Output,"\nPhase B Peak-to-Peak:");
+fprintf(Output,"\nPhase B DC offset:");
+fprintf(Output,"\nPhase C RMS");
+fprintf(Output,"\nPhase B Peak-to-Peak:");
+fprintf(Output,"\nPhase B DC offset:");
+fprintf(Output,"\nClipped samples:");
+fprintf(Output,"\nFrequency range:");
+fprintf(Output,"\nPower factor range:");
+fprintf(Output,"\nTHD range:");
+fprintf(Output,"\nStandard deviation:");
+
+printf("Output saved as output.txt in the main program directory");
+fclose(Output);*/

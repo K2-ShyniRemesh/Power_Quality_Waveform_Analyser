@@ -16,8 +16,9 @@ double compute_rms(const WaveformSample *Log, int rows,int phase) {
 
 }
 
-double compute_peak_to_peak(const WaveformSample *Log,int rows,int phase) {
+double compute_peak_to_peak(const WaveformSample *Log,int rows,int phase,int *peakindex) {
  double lowest=0,highest=0;
+ *peakindex=0;
 
  for (int i = 0; i < rows; i++) {
   if (Log[i].phase_voltage[phase]<lowest) {
@@ -25,14 +26,23 @@ double compute_peak_to_peak(const WaveformSample *Log,int rows,int phase) {
   }
   if (Log[i].phase_voltage[phase]>highest) {
    highest = Log[i].phase_voltage[phase];
+   *peakindex=i;
   }
  }
- return sqrt(highest*highest)+sqrt(lowest*lowest);
+ return highest-lowest;
 }
 
- /*compute_dc_offset(samples,n){}
+ double compute_dc_offset(const WaveformSample *Log,int rows,int phase) {
+  double sumOfVoltage=0;
+ for (int i = 0; i < rows; i++) {
+  sumOfVoltage+=Log[i].phase_voltage[phase];
+ }
+  double dc_offset=(1/rows)*sumOfVoltage;
 
- count_clipped(samples,n,limit){}
+ return dc_offset;
+}
+
+/* count_clipped(samples,n,limit){}
 
  check_compliance(rms,nominal){}
 

@@ -36,21 +36,26 @@ int main(void){
         printf("------------------------------------------------------------------------------------------------------------------------\n");
         int phase=0;
         int indexA=0,indexB=0,indexC=0;
+        double limit=324.9;
 
         int *peakindex=&indexA;
+
         double rmsA=compute_rms(Log,rows,phase);
         double peak_to_peak_A=compute_peak_to_peak(Log,rows,phase,&indexA);
         double offsetA=compute_dc_offset(Log,rows,phase);
+        int countClippedA=count_clipped(Log,rows,phase,limit);
 
         phase=1;
         double rmsB=compute_rms(Log,rows,phase);
         double peak_to_peak_B=compute_peak_to_peak(Log,rows,phase,&indexB);
         double offsetB=compute_dc_offset(Log,rows,phase);
+        int countClippedB=count_clipped(Log,rows,phase,limit);
 
         phase=2;
         double rmsC=compute_rms(Log,rows,phase);
         double peak_to_peak_C   =compute_peak_to_peak(Log,rows,phase,&indexC);
         double offsetC=compute_dc_offset(Log,rows,phase);
+        int countClippedC=count_clipped(Log,rows,phase,limit);
 
             printf("========================================================================================================================\n");
 
@@ -78,7 +83,9 @@ int main(void){
         printf("Phase B DC offset: ~%lf V\n",offsetB);
         printf("Phase C DC offset: ~%lf V\n",offsetC);
 
-
+        printf("Phase A Clipped sample count: %i\n", countClippedA);
+        printf("Phase B Clipped sample count: %i\n", countClippedB);
+        printf("Phase C Clipped sample count: %i\n", countClippedC);
 
 
         printf("========================================================================================================================\n");

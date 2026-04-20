@@ -15,7 +15,7 @@ double compute_peak_to_peak(const WaveformSample *Log,int n,int phase,int *peaki
 
 double compute_dc_offset(const WaveformSample *Log,int n,int phase);
 
-int count_clipped(const WaveformSample *Log,int n,int limit);
+int count_clipped(const WaveformSample *Log,int rows,int phase,double limit);
 
 double check_compliance(rms,nominal);
 

@@ -11,7 +11,7 @@ typedef struct {
     int clippedCount;
 }PhaseResults;
 
-
-int readingCheck(FILE *file, WaveformSample *Log);
+int countRows(FILE *file);
+int readingCheck(FILE *file, WaveformSample *Log, int rows);
 
 #endif //POWER_QUALITY_WAVEFORM_ANALYSER_IO_H

@@ -22,7 +22,10 @@ int main(void){
     //NO ERROR
     printf("Opening the file!\n\n");
 
-    WaveformSample *Log = malloc(1000 * sizeof(WaveformSample));
+    int rows=countRows(file);
+
+    rewind(file);
+    WaveformSample *Log = malloc(rows * sizeof(WaveformSample));
 
     //Logs==NULL can be caused if there is insufficient memory to allocate
     if (Log == NULL) {
@@ -31,9 +34,7 @@ int main(void){
         return -1;
     }
 
-    if (readingCheck(file,Log)==0) {
-
-        int rows=1000;
+    if (readingCheck(file,Log,rows)==0){
         int phase=0;
         int indexA=0,indexB=0,indexC=0;
         double limit=324.9;
@@ -41,21 +42,21 @@ int main(void){
         printf("------------------------------------------------------------------------------------------------------------------------\n");
 
         double rmsA=compute_rms(Log,rows,phase);
-        double peak_to_peak_A=compute_peak_to_peak(Log,rows,phase,&indexA);
+        double peak_to_peak_A=compute_peak_to_peak(Log,rows,phase);
         double offsetA=compute_dc_offset(Log,rows,phase);
         int countClippedA=count_clipped(Log,rows,phase,limit);
         double stdevA=compute_std_dev(Log,rows,phase);
 
         phase=1;
         double rmsB=compute_rms(Log,rows,phase);
-        double peak_to_peak_B=compute_peak_to_peak(Log,rows,phase,&indexB);
+        double peak_to_peak_B=compute_peak_to_peak(Log,rows,phase);
         double offsetB=compute_dc_offset(Log,rows,phase);
         int countClippedB=count_clipped(Log,rows,phase,limit);
         double stdevB=compute_std_dev(Log,rows,phase);
 
         phase=2;
         double rmsC=compute_rms(Log,rows,phase);
-        double peak_to_peak_C   =compute_peak_to_peak(Log,rows,phase,&indexC);
+        double peak_to_peak_C   =compute_peak_to_peak(Log,rows,phase);
         double offsetC=compute_dc_offset(Log,rows,phase);
         int countClippedC=count_clipped(Log,rows,phase,limit);
         double stdevC=compute_std_dev(Log,rows,phase);

@@ -3,7 +3,30 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int readingCheck(FILE *file,WaveformSample *Log){
+int countRows(FILE *file) {
+    int ch;
+    int count = 0;
+    int last_ch = '\n';
+
+    while ((ch = fgetc(file)) != EOF) {
+        if (ch == '\n') {
+            count++;
+        }
+        last_ch = ch;
+    }
+
+    // Handle files that don't end with a newline
+    if (last_ch != '\n') {
+        count++;
+    }
+
+
+
+    // Subtract 1 to remove the "timestamp,phase_A_voltage..." header
+    return (count > 0) ? (count - 1) : 0;
+}
+
+int readingCheck(FILE *file,WaveformSample *Log, int rows){
 
     //Stores the Headers here so that it will not be read by the fscanf function which cannot convert that string to float
     char storeHeading[200];//according to the number of characters in the combined headings
@@ -16,7 +39,7 @@ int readingCheck(FILE *file,WaveformSample *Log){
     int lines=0;//number of fields that have been read
 
     //stores data to the instance of the struct WaveformSample created
-    while (lines<1000){
+    while (lines<rows){
         read=fscanf(file,
                     "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf\n",
                     &Log[lines].timestamp,

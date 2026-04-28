@@ -2,7 +2,15 @@
 #define POWER_QUALITY_WAVEFORM_ANALYSER_IO_H
 
 #include <stdio.h>
-#include"waveform.h"
+#include "waveform.h"
+
+typedef struct {
+    double RMS;
+    double offset;
+    double peak_to_peak;
+    int clippedCount;
+}PhaseResults;
+
 
 int readingCheck(FILE *file, WaveformSample *Log);
 

@@ -1,24 +1,21 @@
 #include"waveform.h"
-#include <stdio.h>
-#include <stdlib.h>
 #include <math.h>
 
+#define Square(x) ((x)*(x))//preprocessor directive to square values
+
 double compute_rms(const WaveformSample *Log, int rows,int phase) {
- double sumSq=0;
+ double currentValue=0;
 
  for (int i = 0; i < rows; i++){
-
-  double currentValue=0;
-  currentValue = Log[i].phase_voltage[phase];
-  sumSq += currentValue * currentValue;
+  currentValue+= Square(Log[i].phase_voltage[phase]);
  }
- return sqrt(sumSq/(double)rows);
+ return sqrt(currentValue/(double)rows);
 
 }
 
-double compute_peak_to_peak(const WaveformSample *Log,int rows,int phase,int *peakindex) {
- double lowest=0,highest=0;
- *peakindex=0;
+double compute_peak_to_peak(const WaveformSample *Log,int rows,int phase) {
+ //for cases where the lowest value is higher than zero to work,lowest and highest is set to the first value
+ double lowest=Log[0].phase_voltage[phase],highest=Log[0].phase_voltage[phase];
 
  for (int i = 0; i < rows; i++) {
   if (Log[i].phase_voltage[phase]<lowest) {
@@ -26,7 +23,6 @@ double compute_peak_to_peak(const WaveformSample *Log,int rows,int phase,int *pe
   }
   if (Log[i].phase_voltage[phase]>highest) {
    highest = Log[i].phase_voltage[phase];
-   *peakindex=i;
   }
  }
  return highest-lowest;
@@ -34,6 +30,7 @@ double compute_peak_to_peak(const WaveformSample *Log,int rows,int phase,int *pe
 
  double compute_dc_offset(const WaveformSample *Log,int rows,int phase) {
   double sumOfVoltage=0;
+
   for (int i = 0; i < rows; i++) {
   sumOfVoltage+=Log[i].phase_voltage[phase];
   }
@@ -43,8 +40,8 @@ double compute_peak_to_peak(const WaveformSample *Log,int rows,int phase,int *pe
 }
 
 int count_clipped(const WaveformSample *Log,int rows,int phase,double limit) {
-
  int count=0;
+
  for (int i = 0; i < rows; i++) {
   if (fabs(Log[i].phase_voltage[phase])>=limit) {
    count++;
@@ -53,8 +50,22 @@ int count_clipped(const WaveformSample *Log,int rows,int phase,double limit) {
  return count;
 }
 
-/* count_clipped(samples,n,limit){}
 
- check_compliance(rms,nominal){}
+double compute_std_dev(const WaveformSample *Log, int rows,int phase) {
+ double sumOfVoltage=0;
 
- compute_std_dev(samples,n){}*/
+ for (int i = 0; i < rows; i++) {
+  sumOfVoltage+=Log[i].phase_voltage[phase];
+ }
+
+ double mean=sumOfVoltage/(double)rows;
+ double temp=0;
+ double squaredSum=0;
+
+ for (int i = 0; i < rows; i++) {
+  temp=Square(Log[i].phase_voltage[phase]-mean);
+  squaredSum+=temp;
+ }
+ double variance=squaredSum/((double)rows-1);
+ return sqrt(variance);
+}

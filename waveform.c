@@ -13,7 +13,6 @@ double compute_rms(const WaveformSample *Log, int rows,int phase){
 }
 
 
-
 double compute_peak_to_peak(const WaveformSample *Log,int rows,int phase) {
  //for cases where the lowest value is higher than zero to work,lowest and highest is set to the first value
  double lowest=Log[0].phase_voltage[phase],highest=Log[0].phase_voltage[phase];

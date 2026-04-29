@@ -7,4 +7,6 @@ add_executable(Power_Quality_Waveform_Analyser main.c
         waveform.h
         waveform.c
         io.c
-        io.h)
+        io.h
+        misc.c
+        misc.h)

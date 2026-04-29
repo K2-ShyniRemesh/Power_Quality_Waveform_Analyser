@@ -2,47 +2,6 @@
 #include"waveform.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-
-
-void removeExtension(char *fileName) {
-    char *end = fileName + strlen(fileName);
-
-    while (end > fileName && *end != '.') {
-        --end;
-    }
-
-    if (end > fileName) {
-        *end = '\0';
-    }
-}
-
-
-
-int countRows(FILE *file) {
-    int ch;
-    int count = 0;
-    int last_ch = '\n';
-
-    while ((ch = fgetc(file)) != EOF) {
-        if (ch == '\n') {
-            count++;
-        }
-        last_ch = ch;
-    }
-
-    // Handle files that don't end with a newline
-    if (last_ch != '\n') {
-        count++;
-    }
-
-
-
-    // Subtract 1 to remove the "timestamp,phase_A_voltage..." header
-    return (count > 0) ? (count - 1) : 0;
-}
-
-
 
 int readingCheck(FILE *file,WaveformSample *Log, int rows){
 
@@ -102,9 +61,6 @@ int readingCheck(FILE *file,WaveformSample *Log, int rows){
 }
 
 
-void notQsort(WaveformSample *Log) {
-
-}
 
 void outputReport(FILE *fp, double rms[3], double peak2peak[3], double offset[3], double stddev[3], int clipped[3]) {
 

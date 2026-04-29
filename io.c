@@ -5,8 +5,6 @@
 #include <string.h>
 
 
-__uint128_t;
-
 void removeExtension(char *fileName) {
     char *end = fileName + strlen(fileName);
 

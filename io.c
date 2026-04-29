@@ -4,6 +4,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+
+__uint128_t;
+
 void removeExtension(char *fileName) {
     char *end = fileName + strlen(fileName);
 
@@ -15,6 +18,7 @@ void removeExtension(char *fileName) {
         *end = '\0';
     }
 }
+
 
 
 int countRows(FILE *file) {
@@ -39,6 +43,8 @@ int countRows(FILE *file) {
     // Subtract 1 to remove the "timestamp,phase_A_voltage..." header
     return (count > 0) ? (count - 1) : 0;
 }
+
+
 
 int readingCheck(FILE *file,WaveformSample *Log, int rows){
 
@@ -97,3 +103,32 @@ int readingCheck(FILE *file,WaveformSample *Log, int rows){
     return 0;
 }
 
+
+void notQsort(WaveformSample *Log) {
+
+}
+
+void outputReport(FILE *fp, double rms[3], double peak2peak[3], double offset[3], double stddev[3], int clipped[3]) {
+
+
+    // Peak-to-Peak
+    fprintf(fp, "Phase A peak-to-peak: ~%lf V\n", peak2peak[0]);
+    fprintf(fp, "Phase B peak-to-peak: ~%lf V\n", peak2peak[1]);
+    fprintf(fp, "Phase C peak-to-peak: ~%lf V\n\n", peak2peak[2]);
+
+    // DC Offset
+    fprintf(fp, "Phase A DC offset: ~%lf V\n", offset[0]);
+    fprintf(fp, "Phase B DC offset: ~%lf V\n", offset[1]);
+    fprintf(fp, "Phase C DC offset: ~%lf V\n\n", offset[2]);
+
+    // Clipped Counts
+    fprintf(fp, "Phase A Clipped sample count: %i\n", clipped[0]);
+    fprintf(fp, "Phase B Clipped sample count: %i\n", clipped[1]);
+    fprintf(fp, "Phase C Clipped sample count: %i\n\n", clipped[2]);
+
+    // Standard Deviation
+    fprintf(fp, "Standard Deviation of phase A: %lf\n", stddev[0]);
+    fprintf(fp, "Standard Deviation of phase B: %lf\n", stddev[1]);
+    fprintf(fp, "Standard Deviation of phase C: %lf\n\n", stddev[2]);
+
+}

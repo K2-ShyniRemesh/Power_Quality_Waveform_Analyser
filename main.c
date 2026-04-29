@@ -13,7 +13,7 @@ int main(void) {
     //takes user input for the file path and uses that as the argument for fopen
     char Path[300];
     printf("Enter the file/folder path\n");
-    scanf("%s",Path);
+    scanf("%[^\n]",Path);
 
     directory=opendir(Path);
 

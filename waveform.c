@@ -41,10 +41,9 @@ double compute_peak_to_peak(const WaveformSample *Log,int rows,int phase) {
 
 int count_clipped(const WaveformSample *Log,int rows,int phase) {
  int count=0;
- double limit=324.9;
 
  for (int i = 0; i < rows; i++) {
-  if (fabs(Log[i].phase_voltage[phase])>=limit) {
+  if (fabs(Log[i].phase_voltage[phase])>=324.9) {
    count++;
   }
  }

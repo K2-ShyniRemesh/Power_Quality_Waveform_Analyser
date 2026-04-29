@@ -11,6 +11,7 @@ typedef struct {
     int clippedCount;
 }PhaseResults;
 
+void removeExtension(char *fileName);
 int countRows(FILE *file);
 int readingCheck(FILE *file, WaveformSample *Log, int rows);
 

@@ -1,103 +1,139 @@
 #include"waveform.h"
-#include "io.h"
 #include "misc.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
-//
+/*    FINDS NUMBER OF ROWS IN CSV
+ *  reads through to find \n or EOF
+ *  for each \n -> increases count
+ *  increases count for EOF if needed
+ */
 int countRows(FILE *file) {
     int ch;
     int count = 0;
-    int last_ch = '\n';
+    int previousCh = '\n';
 
+    //iterates, reading each char until EOF
     while ((ch = fgetc(file)) != EOF) {
         if (ch == '\n') {
-            count++;
+            count++;//increment for each newline found
         }
-        last_ch = ch;
+        previousCh = ch;
     }
 
-    // Handle files that don't end with a newline
-    if (last_ch != '\n') {
+    //makes sure that count is increased to include the last line
+    if (previousCh != '\n') {
         count++;
     }
 
-
-
-    // Subtract 1 to remove the "timestamp,phase_A_voltage..." header
+    //ternary operation to exclude the line with heading
+    //while returning zero for empty files
     return (count > 0) ? (count - 1) : 0;
 }
 
-//
-void removeExtension(char *fileName) {
-    char *end = fileName + strlen(fileName);
+/*     REMOVE EXTENSION FROM FILENAME
+ * Removes the file extension from fileName
+ * goes to end of string
+ * finds last occurrence of "."
+ * ends string at that point
+ */
+void removeExtension(char *filePath) {
+    char *end = filePath + strlen(filePath);
 
-    while (end > fileName && *end != '.') {
-        --end;
-    }
+    while (end > filePath && *end != '.') --end;
 
-    if (end > fileName) {
+    if (end > filePath) {
         *end = '\0';
     }
 }
 
-void notQsort(WaveformSample *Log) {
 
+void merge(WaveformSample *Log, int l, int m, int r){
+    int i, j;
+    int n1 = m - l + 1;
+    int n2 = r - m;
+
+    WaveformSample Left[n1];
+    WaveformSample Right[n2];
+
+    for (i = 0; i < n1; i++)
+        Left[i] = Log[l + i];
+    for (j = 0; j < n2; j++)
+        Right[j] = Log[m + 1 + j];
+
+
+    i = 0;
+    j = 0;
+    int k = l;
+
+    while (i < n1 && j < n2) {
+        if (Left[i].phase_voltage[0] <= Right[j].phase_voltage[0]) {
+            Log[k] = Left[i];
+            i++;
+        }
+        else {
+            Log[k] = Right[j];
+            j++;
+        }
+        k++;
+    }
+
+    while (i < n1) {
+        Log[k] = Left[i];
+        i++;
+        k++;
+    }
+
+    while (j < n2) {
+        Log[k] = Right[j];
+        j++;
+        k++;
+    }
 }
 
-void processCSV(char *filePath) {
-    FILE *file = fopen(filePath,"r");
 
-    //Checks for error when opening the file
-    if (file == NULL){
-        if (errno==ENOENT) {
-            printf("%s NOT FOUND!:   %s\n", filePath,strerror(errno));
-            return;
+void mergeSort(WaveformSample *Log,int l, int r){
+
+    if (l < r) {
+        int m = l + (r - l) / 2;
+
+        mergeSort(Log, l, m);
+        mergeSort(Log, m + 1, r);
+
+        merge(Log, l, m, r);
+    }
+}
+
+
+void Sort(WaveformSample *Log,int rows) {
+    {
+        // Skip the header
+        WaveformSample *ptr = Log + 1;
+        int dataCount = rows - 1;
+
+        WaveformSample temp;
+        int i;
+
+        // Sort the structs using pointers
+        for (i = 0; i < dataCount; i++) {
+
+            for (int j = i + 1; j < dataCount; j++) {
+
+                // Compare magnitude of phase_voltage[0]
+                if (fabs((ptr + j)->phase_voltage[0]) < fabs((ptr + i)->phase_voltage[0])) {
+
+                    // Swap the entire struct contents
+                    temp = *(ptr + i);
+                    *(ptr + i) = *(ptr + j);
+                    *(ptr + j) = temp;
+                }
+            }
         }
+        // Optional: print the first few sorted voltages to verify
+        for (i = 0; i < (dataCount < 5 ? dataCount : 5); i++)
+            printf("%lf ", (ptr + i)->phase_voltage[0]);
+        printf("\n");
     }
-
-    //NO ERROR
-    printf("Opening %s!\n\n",filePath);
-
-    int rows=countRows(file);
-    rewind(file);
-
-    WaveformSample *Log = malloc(rows * sizeof(WaveformSample));
-
-    //Logs==NULL can be caused if there is insufficient memory to allocate
-    if (Log == NULL) {
-        printf("Memory allocation failed!\n");
-        fclose(file);
-        return;
-    }
-
-    if (readingCheck(file,Log,rows)==0) {
-        double rms[3], peak2peak[3], offset[3], stddev[3];
-        int clippedCount[3];
-
-        for (int i=0;i<3;i++) {
-            rms[i]=compute_rms(Log,rows,i);
-            peak2peak[i]=compute_peak_to_peak(Log,rows,i);
-            offset[i]=compute_dc_offset(Log,rows,i);
-            stddev[i]=compute_std_dev(Log,rows,i);
-            clippedCount[i]=count_clipped(Log,rows,i);
-        }
-
-        //calls function to remove the extension from path
-        removeExtension(filePath);
-
-        //concatenates the file name and path (minus the .csv) with Report.txt after it
-        strcat(filePath,"_Report.txt");
-
-        //Creates the report file with permission to write
-        FILE *textFile=fopen(filePath,"w");
-        outputReport(textFile,rms,peak2peak,offset,stddev,clippedCount);
-
-        printf("%s Created\n",filePath);
-        printf("Outputting Report\n");
-    }
-    fclose(file);
-    free(Log);
-
 }

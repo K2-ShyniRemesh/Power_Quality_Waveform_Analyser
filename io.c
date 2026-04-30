@@ -1,25 +1,23 @@
 #include"io.h"
-
-#include <io.h>
-
 #include"waveform.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 void readingHeader(FILE *file,WaveformSample *Log) {
+
     char storeHeading[300];//Buffer for the headings
     fgets(storeHeading,sizeof(storeHeading), file);
 
     //Split the line into separate headings using the token ","
-    char *splitter = strtok(storeHeading, ",");
+    char *splitter = strtok(storeHeading, ",\n\r");
     int headingCount = 0;
 
     while (splitter != NULL && headingCount < 8) {
         //copies the characters to the Headings array of the Log struct
         strncpy(Log[0].Headings[headingCount], splitter, 30);
         Log[0].Headings[headingCount][30] = '\0';
-        splitter = strtok(NULL, ",\n");
+        splitter = strtok(NULL, ",\n\r");
         headingCount++;
     }
 
@@ -102,8 +100,6 @@ int readingCheck(FILE *file,WaveformSample *Log, int rows){
     return 0;
 }
 
-
-
 void outputReport(FILE *fp, double rms[3], double peak2peak[3], double offset[3], double stddev[3], int clipped[3]) {
 
 
@@ -127,4 +123,47 @@ void outputReport(FILE *fp, double rms[3], double peak2peak[3], double offset[3]
     fprintf(fp, "Standard Deviation of phase B: %lf\n", stddev[1]);
     fprintf(fp, "Standard Deviation of phase C: %lf\n\n", stddev[2]);
 
+}
+
+void saveSorted(const char *filePath, WaveformSample *Log,int rows) {
+
+    char sortedPath[512];
+    strcpy(sortedPath,filePath);
+
+    //uses a pointer to go to the end of the string and finds the . before the extension
+    char *dot = sortedPath+strlen(sortedPath);
+    while (dot>sortedPath && *dot!='.') dot--;
+
+    //ends the filename at the final dot and adds a string at its end
+    if (dot >sortedPath) {
+        *dot = '\0';
+        strcat(sortedPath,"(sorted).csv");
+    }
+
+    //creates the file to store sorted data
+    FILE *sortedCSV = fopen(sortedPath, "w");
+    if (sortedCSV == NULL) {
+        printf("Error: Could not create sorted file %s\n", sortedPath);
+        return;
+    }
+
+    //writes the headings onto the new csv file
+    for (int i=0;i<8;i++) {
+        fprintf(sortedCSV,"%s%s",Log[0].Headings[i],(i<7)?",":"\n");
+    }
+
+    for (int i = 0; i < rows; i++) {
+        fprintf(sortedCSV, "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%s",
+                Log[i].timestamp,
+                Log[i].phase_voltage[0],
+                Log[i].phase_voltage[1],
+                Log[i].phase_voltage[2],
+                Log[i].line_current,
+                Log[i].frequency,
+                Log[i].power_factor,
+                Log[i].thd_percent,
+                (i==rows-1)?"":"\n");
+    }
+    fclose(sortedCSV);
+    printf("Sorted data saved to: %s\n", sortedPath);
 }

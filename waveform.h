@@ -10,11 +10,8 @@ typedef struct {
 
 
 double compute_rms(const WaveformSample *Log, int n,int phase);
-
 double compute_peak_to_peak(const WaveformSample *Log,int n,int phase);
-
 double compute_dc_offset(const WaveformSample *Log,int n,int phase);
-
 int count_clipped(const WaveformSample *Log,int rows,int phase);
 
 double check_compliance(double rms,double nominal);

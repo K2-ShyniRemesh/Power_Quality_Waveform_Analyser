@@ -5,8 +5,8 @@
 #include "io.h"
 
 int countRows(FILE *file);
-void removeExtension(char *fileName);
-void notQsort(WaveformSample *Log);
-void processCSV(char *filePath);
+void removeExtension(char *filePath);
+
+void Sort(WaveformSample *Log,int rows);
 
 #endif //POWER_QUALITY_WAVEFORM_ANALYSER_MISC_H

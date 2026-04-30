@@ -2,6 +2,7 @@
 #define POWER_QUALITY_WAVEFORM_ANALYSER_WAVEFORM_H
 
 typedef struct {
+    char Headings[8][31];//2d array to store 8 strings of max 30 chars(or 8 instances)
     double timestamp;
     double phase_voltage[3];
     double line_current,frequency,power_factor,thd_percent;

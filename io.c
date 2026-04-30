@@ -1,54 +1,96 @@
 #include"io.h"
+
+#include <io.h>
+
 #include"waveform.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
+void readingHeader(FILE *file,WaveformSample *Log) {
+    char storeHeading[300];//Buffer for the headings
+    fgets(storeHeading,sizeof(storeHeading), file);
+
+    //Split the line into separate headings using the token ","
+    char *splitter = strtok(storeHeading, ",");
+    int headingCount = 0;
+
+    while (splitter != NULL && headingCount < 8) {
+        //copies the characters to the Headings array of the Log struct
+        strncpy(Log[0].Headings[headingCount], splitter, 30);
+        Log[0].Headings[headingCount][30] = '\0';
+        splitter = strtok(NULL, ",\n");
+        headingCount++;
+    }
+
+    printf("Line0: ");
+    for (int i=0;i<headingCount;i++) {
+        printf("%s ",Log[0].Headings[i]);
+        if (i==headingCount-1) {
+            printf("\n");
+        }
+    }
+}
 
 int readingCheck(FILE *file,WaveformSample *Log, int rows){
 
-    //Stores the Headers here so that it will not be read by the fscanf function which cannot convert that string to float
-    char storeHeading[200];//according to the number of characters in the combined headings
-    if (fgets(storeHeading,sizeof(storeHeading),file)==NULL) {
-        printf("Error reading file!\n");
-        return -1;
-    }
+    readingHeader(file,Log);
 
-    int read=0;//stores number of columns read successfully
     int lines=0;//number of fields that have been read
+    char buffer[256];//stores values from one row
 
     //stores data to the instance of the struct WaveformSample created
-    while (lines<rows){
-        read=fscanf(file,
-                    "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf\n",
-                    &Log[lines].timestamp,
-                    &Log[lines].phase_voltage[0],
-                    &Log[lines].phase_voltage[1],
-                    &Log[lines].phase_voltage[2],
-                    &Log[lines].line_current,
-                    &Log[lines].frequency,
-                    &Log[lines].power_factor,
-                    &Log[lines].thd_percent);
+    while (lines<rows && fgets(buffer,sizeof(buffer),file) != NULL) {
 
-        //if one row is read without error read increment by 1
-        if (read ==8){
-            //outputs the first few
-            if (lines<6){printf("Line%d: Time=%.4lf, V_A=%.6lf, V_B=%.6lf, V_C=%.6lf, L_C=%.5lf, FQ=%.4lf, P_F=%.4lf, THD=%.4lf \n",
-                lines+1,
-                Log[lines].timestamp,
-                Log[lines].phase_voltage[0],
-                Log[lines].phase_voltage[1],
-                Log[lines].phase_voltage[2],
-                Log[lines].line_current,
-                Log[lines].frequency,
-                Log[lines].power_factor,
-                Log[lines].thd_percent);}
-                lines++;
-        }
+        char *ptr=buffer;
+        char *endptr;
 
-        //error e.g. the number of fields in a row is not 8
-        if (read !=8 ){
-            printf("The file is not formatted correctly!\n");
-            exit(-1);
+        Log[lines].timestamp = strtod(ptr, &endptr);
+        ptr = endptr;
+        if (*ptr == ',') ptr++;
+
+        Log[lines].phase_voltage[0]=strtod(ptr,&endptr);
+        ptr = endptr;
+        if (*ptr == ',') ptr++;
+
+        Log[lines].phase_voltage[1]=strtod(ptr,&endptr);
+        ptr = endptr;
+        if (*ptr == ',') ptr++;
+
+        Log[lines].phase_voltage[2]=strtod(ptr,&endptr);
+        ptr = endptr;
+        if (*ptr == ',') ptr++;
+
+        Log[lines].line_current=strtod(ptr,&endptr);
+        ptr = endptr;
+        if (*ptr == ',') ptr++;
+
+        Log[lines].frequency=strtod(ptr,&endptr);
+        ptr = endptr;
+        if (*ptr == ',') ptr++;
+
+        Log[lines].power_factor=strtod(ptr,&endptr);
+        ptr = endptr;
+        if (*ptr == ',') ptr++;
+
+        Log[lines].thd_percent=strtod(ptr,&endptr);
+
+        //outputs the first few
+        if (lines<6){
+            printf("Line%d: Time=%.4lf, V_A=%.6lf, V_B=%.6lf, V_C=%.6lf, L_C=%.5lf, FQ=%.4lf, P_F=%.4lf, THD=%.4lf \n",
+            lines+1,
+            Log[lines].timestamp,
+            Log[lines].phase_voltage[0],
+            Log[lines].phase_voltage[1],
+            Log[lines].phase_voltage[2],
+            Log[lines].line_current,
+            Log[lines].frequency,
+            Log[lines].power_factor,
+            Log[lines].thd_percent);
         }
+        //goes to next row
+        lines++;
+
 
         //some other error with file
         if (ferror(file)){

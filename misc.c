@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+//
 int countRows(FILE *file) {
     int ch;
     int count = 0;
@@ -28,6 +29,7 @@ int countRows(FILE *file) {
     return (count > 0) ? (count - 1) : 0;
 }
 
+//
 void removeExtension(char *fileName) {
     char *end = fileName + strlen(fileName);
 

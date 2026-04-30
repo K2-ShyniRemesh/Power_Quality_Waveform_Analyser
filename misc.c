@@ -50,61 +50,6 @@ void removeExtension(char *filePath) {
 }
 
 
-void merge(WaveformSample *Log, int l, int m, int r){
-    int i, j;
-    int n1 = m - l + 1;
-    int n2 = r - m;
-
-    WaveformSample Left[n1];
-    WaveformSample Right[n2];
-
-    for (i = 0; i < n1; i++)
-        Left[i] = Log[l + i];
-    for (j = 0; j < n2; j++)
-        Right[j] = Log[m + 1 + j];
-
-
-    i = 0;
-    j = 0;
-    int k = l;
-
-    while (i < n1 && j < n2) {
-        if (Left[i].phase_voltage[0] <= Right[j].phase_voltage[0]) {
-            Log[k] = Left[i];
-            i++;
-        }
-        else {
-            Log[k] = Right[j];
-            j++;
-        }
-        k++;
-    }
-
-    while (i < n1) {
-        Log[k] = Left[i];
-        i++;
-        k++;
-    }
-
-    while (j < n2) {
-        Log[k] = Right[j];
-        j++;
-        k++;
-    }
-}
-
-
-void mergeSort(WaveformSample *Log,int l, int r){
-
-    if (l < r) {
-        int m = l + (r - l) / 2;
-
-        mergeSort(Log, l, m);
-        mergeSort(Log, m + 1, r);
-
-        merge(Log, l, m, r);
-    }
-}
 
 
 void Sort(WaveformSample *Log,int rows) {

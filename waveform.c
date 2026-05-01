@@ -2,6 +2,7 @@
 #include <math.h>
 
 #define Square(x) ((x)*(x))//preprocessor directive to square values
+
 #define OFFSETOF(TYPE, ELEMENT) ((size_t)&(((TYPE *)0)->ELEMENT))
 
 double compute_rms(const WaveformSample *Log, int rows,int phase){
@@ -50,15 +51,22 @@ int count_clipped(const WaveformSample *Log,int rows,int phase) {
  return count;
 }
 
-/*range rangeFinder(WaveformSample *Log,int rows,offsetof(WaveformSample,)){
+range rangeFinder( int rows,WaveformSample *Log, size_t column) {
 
- double lowest=Log[0].column,highest=Log[0].column2;
+ //for cases where the lowest value is higher than zero to work,lowest and highest is set to the first value
+ double lowest = *(double*)  ((char*)&Log[0]+column);
+ double highest = *(double*)  ( (char*)&Log[0]+column);
 
- for (int i = 0; i < rows; i++) {
-  if (Log[i].column<lowest) lowest = Log[i].column;
-  if (Log[i].column>highest) highest = Log[i].column;
+ //normal for loop to find highest and lowest value
+ for (int i = 1; i < rows; i++) {
+  double current_val = *(double*) ((char*)&Log[i]+column);
+  if (current_val < lowest) lowest = current_val;
+  if (current_val > highest) highest = current_val;
  }
-}*/
+
+ range tempRange={lowest,highest};
+ return tempRange;
+}
 
 double compute_std_dev(const WaveformSample *Log, int rows,int phase) {
  double sumOfVoltage=0;

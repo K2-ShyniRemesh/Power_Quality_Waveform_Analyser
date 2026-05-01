@@ -27,9 +27,10 @@ void processCSV(char *filePath) {
     int rows=countRows(file);//calls the function in misc.c
     rewind(file);
 
+    //instantiating the structure
     WaveformSample *Log = malloc(rows * sizeof(WaveformSample));
 
-    //Logs==NULL can be caused if there is insufficient memory to allocate
+    //if there is insufficient memory to allocate to the structure
     if (Log == NULL) {
         printf("Memory allocation failed!\n");
         fclose(file);
@@ -40,13 +41,12 @@ void processCSV(char *filePath) {
 
         //calls function mergesort
         Sort(Log,rows);//function in misc.c
+
         //saves the sorted csv file
         saveSorted(filePath,Log,rows);//function in io.c
 
-        double rms[3], peak2peak[3], offset[3], stddev[3];
-        int clippedCount[3];
-
-        uint8_t phaseHealth[3]={0,0,0};
+        //all the variables for storing calculating results
+        double rms[3], peak2peak[3], offset[3], stddev[3];      int clippedCount[3];        uint8_t phaseHealth[3]={0,0,0};
 
         //Calling All calculation functions for each phase
         for (int i=0;i<3;i++) {
@@ -66,7 +66,12 @@ void processCSV(char *filePath) {
             }
         }
 
+        range frequencyRange=rangeFinder(rows,Log,offsetof(WaveformSample,frequency));
+        range thdRange=rangeFinder(rows,Log,offsetof(WaveformSample,thd_percent));
+        range powerfactorRange=rangeFinder(rows,Log,offsetof(WaveformSample,power_factor));
 
+
+        printf("%lf to %lf",frequencyRange.lowest,frequencyRange.highest);
         //calls function to remove the extension from path
         removeExtension(filePath);
 
@@ -75,10 +80,13 @@ void processCSV(char *filePath) {
 
         //Creates the report file with permission to write
         FILE *textFile=fopen(filePath,"w");
+
+        //calling function to output the sorted file
         if (textFile){
             outputReport(textFile,rms,peak2peak,offset,stddev,clippedCount,phaseHealth);
             fclose(textFile);
         }
+        //if the file cannot be made
         else {
 
         }

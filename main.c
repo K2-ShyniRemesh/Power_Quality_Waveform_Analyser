@@ -46,32 +46,31 @@ void processCSV(char *filePath) {
         saveSorted(filePath,Log,rows);//function in io.c
 
         //all the variables for storing calculating results
-        double rms[3], peak2peak[3], offset[3], stddev[3];      int clippedCount[3];        uint8_t phaseHealth[3]={0,0,0};
+        resultSample theResults;
+        uint8_t phaseHealth[3]={0,0,0};
 
         //Calling All calculation functions for each phase
         for (int i=0;i<3;i++) {
-            rms[i]=compute_rms(Log,rows,i);
-            peak2peak[i]=compute_peak_to_peak(Log,rows,i);
-            offset[i]=compute_dc_offset(Log,rows,i);
-            stddev[i]=compute_std_dev(Log,rows,i);
-            clippedCount[i]=count_clipped(Log,rows,i);
+            theResults.rms[i]=compute_rms(Log,rows,i);
+            theResults.peak2peak[i]=compute_peak_to_peak(Log,rows,i);
+            theResults.offset[i]=compute_dc_offset(Log,rows,i);
+            theResults.stddev[i]=compute_std_dev(Log,rows,i);
+            theResults.clippedCount[i]=count_clipped(Log,rows,i);
 
             // Check clipping
-            if (clippedCount[i] > 0) {
+            if (theResults.clippedCount[i] > 0) {
                 phaseHealth[i] |= 0x01;
             }
             // Check tolerance
-            if (rms[i] > 253.0 || rms[i] < 207.0) {
+            if (theResults.rms[i] > 253.0 || theResults.rms[i] < 207.0) {
                 phaseHealth[i] |= 0x02;
             }
         }
 
         range frequencyRange=rangeFinder(rows,Log,offsetof(WaveformSample,frequency));
         range thdRange=rangeFinder(rows,Log,offsetof(WaveformSample,thd_percent));
-        range powerfactorRange=rangeFinder(rows,Log,offsetof(WaveformSample,power_factor));
+        range powerFactorRange=rangeFinder(rows,Log,offsetof(WaveformSample,power_factor));
 
-
-        printf("%lf to %lf",frequencyRange.lowest,frequencyRange.highest);
         //calls function to remove the extension from path
         removeExtension(filePath);
 
@@ -83,7 +82,7 @@ void processCSV(char *filePath) {
 
         //calling function to output the sorted file
         if (textFile){
-            outputReport(textFile,rms,peak2peak,offset,stddev,clippedCount,phaseHealth);
+            outputReport(textFile,theResults,phaseHealth,&frequencyRange,&thdRange,&powerFactorRange);
             fclose(textFile);
         }
         //if the file cannot be made

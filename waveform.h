@@ -3,6 +3,7 @@
 #include <stddef.h>
 
 
+
 typedef struct {
     char Headings[8][51];//2d array to store 8 strings of max 30 chars(or 8 instances)
     double timestamp;
@@ -10,10 +11,11 @@ typedef struct {
     double line_current,frequency,power_factor,thd_percent;
 } WaveformSample;
 
-
 typedef struct {
     double lowest,highest;
 }range;
+
+
 
 double compute_rms(const WaveformSample *Log, int n,int phase);
 double compute_peak_to_peak(const WaveformSample *Log,int n,int phase);

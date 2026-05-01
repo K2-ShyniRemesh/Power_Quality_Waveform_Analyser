@@ -101,32 +101,36 @@ int readingCheck(FILE *file,WaveformSample *Log, int rows){
     return 0;
 }
 
-void outputReport(FILE *fp, double rms[3], double peak2peak[3], double offset[3], double stddev[3], int clipped[3], const uint8_t phaseHealth[3]) {
+void outputReport(FILE *textFile, resultSample theResults, const uint8_t phaseHealth[3],const range *frequencyRange,const range *thdRange,const range *powerFactorRange) {
 
     for (int i = 0; i < 3; i++) {
         char phase = "ABC)"[i];
 
-            fprintf(fp, "Phase %c:\n", phase);
-            fprintf(fp, "  RMS: %lf V\n", rms[i]);
-            fprintf(fp, "  Peak-to-Peak: %lf V\n", peak2peak[i]);
-            fprintf(fp, "  DC Offset: %lf V\n", offset[i]);
-            fprintf(fp, "  Clipped Count: %d\n", clipped[i]);
-            fprintf(fp, "  Std Dev: %lf\n", stddev[i]);
+        fprintf(textFile, "Phase %c:\n", phase);
+
+        fprintf(textFile, "     RMS: %.3lf V\n", theResults.rms[i]);
+        fprintf(textFile, "     Peak-to-Peak: %.3lf V\n", theResults.peak2peak[i]);
+        fprintf(textFile, "     DC Offset: %.3lf V\n", theResults.offset[i]);
+        fprintf(textFile, "     Clipped Count: %.3d\n", theResults.clippedCount[i]);
+        fprintf(textFile, "     Std Dev: %.3lf\n", theResults.stddev[i]);
 
             // Checks if the value is zero/phase is healthy
-            if (phaseHealth[i] == 0) {
-                fprintf(fp, "[NO CLIPPING]\n[WITHIN TOLERANCE RANGE]\n\n");
+        if (phaseHealth[i] == 0)  fprintf(textFile,   "[NO CLIPPING]\n[WITHIN TOLERANCE RANGE]\n\n");
 
-            } else {
-                // Clipping
-                if (phaseHealth[i] & 0x01)      fprintf(fp, "[CLIPPING DETECTED]\n\n");
-                //Tolerance
-                if (phaseHealth[i] & 0x02)      fprintf(fp, "[OUT OF TOLERANCE LIMIT]\n\n");
+        else {
+            // Clipping
+            if (phaseHealth[i] & 0x01) fprintf(textFile, "     [CLIPPING DETECTED]\n\n");
+            //Tolerance
+            if (phaseHealth[i] & 0x02) fprintf(textFile, "     [OUT OF TOLERANCE LIMIT]\n\n");
             }
     }
+
+    fprintf(textFile,"Frequency Range: %.3lf to %.3lf Hz\n",frequencyRange->lowest,frequencyRange->highest);
+    fprintf(textFile,"Power Factor Range: %3lf to %.3lf\n",thdRange->lowest,thdRange->highest);
+    fprintf(textFile,"THD percent Range: %.2lf%% to %.2lf%%\n",powerFactorRange->lowest,powerFactorRange->highest);
 }
 
-void saveSorted(const char *filePath, WaveformSample *Log,int rows) {
+void saveSorted(const char *filePath, WaveformSample *Log,int rows){
 
     char sortedPath[2048];
     strcpy(sortedPath,filePath);

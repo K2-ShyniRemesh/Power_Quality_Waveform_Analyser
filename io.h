@@ -5,10 +5,19 @@
 #include "waveform.h"
 #include <stdint.h>
 
+
+
+typedef struct {
+    double rms[3],peak2peak[3],offset[3],stddev[3];
+    int clippedCount[3];
+}resultSample;
+
+
+
 int readingCheck(FILE *file, WaveformSample *Log, int rows);
 
 void saveSorted(const char *filePath, WaveformSample *Log,int rows);
 
-void outputReport(FILE *fp, double rms[3], double peak2peak[3], double offset[3], double stddev[3], int clipped[3],const uint8_t phaseHealth[3]);
+void outputReport(FILE *fp,resultSample theResults,const uint8_t phaseHealth[3],const range *frequencyRange,const range *thdRange,const range *powerFactorRange);
 
 #endif //POWER_QUALITY_WAVEFORM_ANALYSER_IO_H

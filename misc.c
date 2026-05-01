@@ -56,7 +56,6 @@ void Sort(WaveformSample *Log,int rows) {
         WaveformSample *ptr = Log + 1;
         int dataCount = rows - 1;
 
-        WaveformSample temp;
         int i;
 
         // Sort the structs using pointers
@@ -68,7 +67,7 @@ void Sort(WaveformSample *Log,int rows) {
                 if (fabs((ptr + j)->phase_voltage[0]) < fabs((ptr + i)->phase_voltage[0])) {
 
                     // Swap the entire struct contents
-                    temp = *(ptr + i);
+                    WaveformSample temp = *(ptr + i);
                     *(ptr + i) = *(ptr + j);
                     *(ptr + j) = temp;
                 }

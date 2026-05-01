@@ -5,6 +5,8 @@
 #include <string.h>
 #include <errno.h>
 
+//for using uint8_t
+#include <stdint.h>
 
 void processCSV(char *filePath) {
 
@@ -44,13 +46,26 @@ void processCSV(char *filePath) {
         double rms[3], peak2peak[3], offset[3], stddev[3];
         int clippedCount[3];
 
+        uint8_t phaseHealth[3]={0,0,0};
+
+        //Calling All calculation functions for each phase
         for (int i=0;i<3;i++) {
             rms[i]=compute_rms(Log,rows,i);
             peak2peak[i]=compute_peak_to_peak(Log,rows,i);
             offset[i]=compute_dc_offset(Log,rows,i);
             stddev[i]=compute_std_dev(Log,rows,i);
             clippedCount[i]=count_clipped(Log,rows,i);
+
+            // Check clipping
+            if (clippedCount[i] > 0) {
+                phaseHealth[i] |= 0x01;
+            }
+            // Check tolerance
+            if (rms[i] > 253.0 || rms[i] < 207.0) {
+                phaseHealth[i] |= 0x02;
+            }
         }
+
 
         //calls function to remove the extension from path
         removeExtension(filePath);
@@ -61,7 +76,7 @@ void processCSV(char *filePath) {
         //Creates the report file with permission to write
         FILE *textFile=fopen(filePath,"w");
         if (textFile){
-            outputReport(textFile,rms,peak2peak,offset,stddev,clippedCount);
+            outputReport(textFile,rms,peak2peak,offset,stddev,clippedCount,phaseHealth);
             fclose(textFile);
         }
         else {
@@ -75,14 +90,14 @@ void processCSV(char *filePath) {
 
 }
 
-int main(void) {
+int main(int argc, char *argv[]) {
     printf("------------------------------------------------------------------------------------------------------------------------\n");
 
     //takes user input for the file path and uses that as the argument ProcessCSV
     char inputPath[2048];
     printf("Enter the file/folder path\n");
 
-    //case wher the input path does not exist
+    //case where the input path does not exist
     if (scanf("%[^\n]",inputPath)!=1) {
         printf("the ");
     }

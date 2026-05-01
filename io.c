@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 
 void readingHeader(FILE *file,WaveformSample *Log) {
 
@@ -100,29 +101,29 @@ int readingCheck(FILE *file,WaveformSample *Log, int rows){
     return 0;
 }
 
-void outputReport(FILE *fp, double rms[3], double peak2peak[3], double offset[3], double stddev[3], int clipped[3]) {
+void outputReport(FILE *fp, double rms[3], double peak2peak[3], double offset[3], double stddev[3], int clipped[3], const uint8_t phaseHealth[3]) {
 
+    for (int i = 0; i < 3; i++) {
+        char phase = "ABC)"[i];
 
-    // Peak-to-Peak
-    fprintf(fp, "Phase A peak-to-peak: ~%lf V\n", peak2peak[0]);
-    fprintf(fp, "Phase B peak-to-peak: ~%lf V\n", peak2peak[1]);
-    fprintf(fp, "Phase C peak-to-peak: ~%lf V\n\n", peak2peak[2]);
+            fprintf(fp, "Phase %c:\n", phase);
+            fprintf(fp, "  RMS: %lf V\n", rms[i]);
+            fprintf(fp, "  Peak-to-Peak: %lf V\n", peak2peak[i]);
+            fprintf(fp, "  DC Offset: %lf V\n", offset[i]);
+            fprintf(fp, "  Clipped Count: %d\n", clipped[i]);
+            fprintf(fp, "  Std Dev: %lf\n", stddev[i]);
 
-    // DC Offset
-    fprintf(fp, "Phase A DC offset: ~%lf V\n", offset[0]);
-    fprintf(fp, "Phase B DC offset: ~%lf V\n", offset[1]);
-    fprintf(fp, "Phase C DC offset: ~%lf V\n\n", offset[2]);
+            // Checks if the value is zero/phase is healthy
+            if (phaseHealth[i] == 0) {
+                fprintf(fp, "[NO CLIPPING]\n[WITHIN TOLERANCE RANGE]\n\n");
 
-    // Clipped Counts
-    fprintf(fp, "Phase A Clipped sample count: %i\n", clipped[0]);
-    fprintf(fp, "Phase B Clipped sample count: %i\n", clipped[1]);
-    fprintf(fp, "Phase C Clipped sample count: %i\n\n", clipped[2]);
-
-    // Standard Deviation
-    fprintf(fp, "Standard Deviation of phase A: %lf\n", stddev[0]);
-    fprintf(fp, "Standard Deviation of phase B: %lf\n", stddev[1]);
-    fprintf(fp, "Standard Deviation of phase C: %lf\n\n", stddev[2]);
-
+            } else {
+                // Clipping
+                if (phaseHealth[i] & 0x01)      fprintf(fp, "[CLIPPING DETECTED]\n\n");
+                //Tolerance
+                if (phaseHealth[i] & 0x02)      fprintf(fp, "[OUT OF TOLERANCE LIMIT]\n\n");
+            }
+    }
 }
 
 void saveSorted(const char *filePath, WaveformSample *Log,int rows) {

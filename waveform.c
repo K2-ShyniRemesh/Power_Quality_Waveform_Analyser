@@ -3,6 +3,7 @@
 
 #define Square(x) ((x)*(x))//preprocessor directive to square values
 
+
 double compute_rms(const WaveformSample *Log, int rows,int phase){
  double currentValue=0;
 
@@ -49,6 +50,35 @@ int count_clipped(const WaveformSample *Log,int rows,int phase) {
  return count;
 }
 
+void rangeFinder(WaveformSample *Log,int rows,char column){
+ double lowest=Log[0].frequency,highest=Log[0].frequency;
+ range frequencyRange={frequencyRange};
+
+ for (int i = 0; i < rows; i++) {
+  if (Log[i].frequency<lowest) lowest = Log[i].frequency;
+  if (Log[i].frequency>highest) highest = Log[i].frequency;
+ }
+}
+
+void powerFactor(WaveformSample *Log,int rows) {
+ double lowest=Log[0].power_factor,highest=Log[0].power_factor;
+
+ for (int i = 0; i < rows; i++) {
+  if (Log[i].power_factor<lowest) lowest = Log[i].power_factor;
+
+  if (Log[i].power_factor>highest) highest = Log[i].power_factor;
+ }
+}
+
+void THD(WaveformSample *Log,int rows) {
+ double lowest=Log[0].thd_percent,highest=Log[0].thd_percent;
+
+ for (int i = 0; i < rows; i++) {
+  if (Log[i].thd_percent<lowest) lowest = Log[i].thd_percent;
+
+  if (Log[i].thd_percent>highest) highest = Log[i].thd_percent;
+}
+}
 
 double compute_std_dev(const WaveformSample *Log, int rows,int phase) {
  double sumOfVoltage=0;

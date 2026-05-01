@@ -50,8 +50,6 @@ void removeExtension(char *filePath) {
 }
 
 
-
-
 void Sort(WaveformSample *Log,int rows) {
     {
         // Skip the header

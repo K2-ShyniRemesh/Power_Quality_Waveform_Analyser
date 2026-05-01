@@ -6,7 +6,7 @@
 
 void readingHeader(FILE *file,WaveformSample *Log) {
 
-    char storeHeading[300];//Buffer for the headings
+    char storeHeading[500];//Buffer for the headings
     fgets(storeHeading,sizeof(storeHeading), file);
 
     //Split the line into separate headings using the token ","
@@ -15,8 +15,8 @@ void readingHeader(FILE *file,WaveformSample *Log) {
 
     while (splitter != NULL && headingCount < 8) {
         //copies the characters to the Headings array of the Log struct
-        strncpy(Log[0].Headings[headingCount], splitter, 30);
-        Log[0].Headings[headingCount][30] = '\0';
+        strncpy(Log[0].Headings[headingCount], splitter, 50);
+        Log[0].Headings[headingCount][50] = '\0';
         splitter = strtok(NULL, ",\n\r");
         headingCount++;
     }
@@ -35,7 +35,7 @@ int readingCheck(FILE *file,WaveformSample *Log, int rows){
     readingHeader(file,Log);
 
     int lines=0;//number of fields that have been read
-    char buffer[256];//stores values from one row
+    char buffer[1024];//stores values from one row
 
     //stores data to the instance of the struct WaveformSample created
     while (lines<rows && fgets(buffer,sizeof(buffer),file) != NULL) {
@@ -127,7 +127,7 @@ void outputReport(FILE *fp, double rms[3], double peak2peak[3], double offset[3]
 
 void saveSorted(const char *filePath, WaveformSample *Log,int rows) {
 
-    char sortedPath[512];
+    char sortedPath[2048];
     strcpy(sortedPath,filePath);
 
     //uses a pointer to go to the end of the string and finds the . before the extension
@@ -153,7 +153,7 @@ void saveSorted(const char *filePath, WaveformSample *Log,int rows) {
     }
 
     for (int i = 0; i < rows; i++) {
-        fprintf(sortedCSV, "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%s",
+        fprintf(sortedCSV, "%.19g,%.19g,%.19g,%.19g,%.19g,%.19g,%.19g,%.19g,%s",
                 Log[i].timestamp,
                 Log[i].phase_voltage[0],
                 Log[i].phase_voltage[1],

@@ -5,6 +5,7 @@
 #include <string.h>
 #include <errno.h>
 
+
 void processCSV(char *filePath) {
 
     //opens the file in the given path to read only
@@ -78,9 +79,13 @@ int main(void) {
     printf("------------------------------------------------------------------------------------------------------------------------\n");
 
     //takes user input for the file path and uses that as the argument ProcessCSV
-    char inputPath[512];
+    char inputPath[2048];
     printf("Enter the file/folder path\n");
-    scanf("%[^\n]",inputPath);
+
+    //case wher the input path does not exist
+    if (scanf("%[^\n]",inputPath)!=1) {
+        printf("the ");
+    }
 
     //checks if the user input is path to folder or file
     if (strcmp(inputPath + strlen(inputPath) - 4, ".csv") == 0) {
@@ -88,14 +93,13 @@ int main(void) {
         processCSV(inputPath);//function is in main.c
         printf("------------------------------------------------------------------------------------------------------------------------\n");
     }
-
     else {
         DIR *directory=opendir(inputPath);
         struct dirent *entry;
 
         if (directory!=NULL) {
             while ((entry = readdir(directory)) != NULL) {
-                char filePath[512];
+                char filePath[2048];
                     if (strcmp(entry->d_name + strlen(entry->d_name) - 4, ".csv") == 0) {
                         strcpy(filePath,inputPath);
                         strcat(filePath,"/");//no check for slash included(not necessary for most OS)

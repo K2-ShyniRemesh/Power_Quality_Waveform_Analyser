@@ -29,7 +29,7 @@ Power Quality Waveform Analyser is program that reads real-world power quality d
     ./Power_Quality_Waveform_Analyser
     ```
 
-## CMake file example for linking math library
+## CMake compiling steps
 
 ```cmake
 cmake_minimum_required(VERSION 4.1)
@@ -49,3 +49,5 @@ add_executable(Power_Quality_Waveform_Analyser
 
 target_link_libraries(Power_Quality_Waveform_Analyser m)
 ```
+    1.Build the program
+    2.Run the program

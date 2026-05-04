@@ -30,7 +30,7 @@ void processCSV(char *filePath) {
     rewind(file);
 
     if (rows==0) {
-        printf("%s is empty",filePath);
+        printf("%s: IS EMPTY",filePath);
         fclose(file);
         return;
     }
@@ -154,7 +154,7 @@ int main() {
     if (errno!=0) printf("%s\n",strerror(errno));
 
     char exit;
-    printf("\nPress Enter to exit.....");
+    printf("\n\nPress Enter to exit.....");
     scanf("%c",&exit);
     getchar();
     return 0;

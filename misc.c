@@ -50,21 +50,19 @@ void removeExtension(char *filePath) {
 }
 
 
-void Sort(WaveformSample *Log,int rows) {
+void Sort(WaveformSample *Log,int rows)
     {
         // Skipping the header by adding 1
         WaveformSample *ptr = Log +1;
         int dataCount = rows-1;
 
-        // Sort the structs using pointers
+        // nesteed loops comparing the values in phase_A_Voltage
         for (int i = 0; i < dataCount; i++) {
 
             for (int j = i + 1; j < dataCount; j++) {
 
-                // Compare magnitude of phase_voltage[0]
                 if (fabs((ptr + j)->phase_voltage[0]) < fabs((ptr + i)->phase_voltage[0])) {
 
-                    // Swap the entire struct contents
                     WaveformSample temp = *(ptr + i);
                     *(ptr + i) = *(ptr + j);
                     *(ptr + j) = temp;
@@ -72,4 +70,3 @@ void Sort(WaveformSample *Log,int rows) {
             }
         }
     }
-}

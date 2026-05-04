@@ -112,7 +112,7 @@ void processCSV(char *filePath) {
     free(Log);
 }
 
-int main(int argc, char *argv[]) {
+int main() {
 
     //takes user input for the file path and uses that as the argument ProcessCSV
     char inputPath[2048];
@@ -152,5 +152,10 @@ int main(int argc, char *argv[]) {
         if (zeroEntries==1) printf("NO CSV FILE IN THE INPUT DIRECTORY");
     }
     if (errno!=0) printf("%s\n",strerror(errno));
+
+    char exit;
+    printf("\nPress Enter to exit.....");
+    scanf("%c",&exit);
+    getchar();
     return 0;
 }

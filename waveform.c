@@ -5,6 +5,10 @@
 
 #define OFFSETOF(TYPE, ELEMENT) ((size_t)&(((TYPE *)0)->ELEMENT))
 
+/*       Computes RMS
+ * sums the square of the value in each row
+ * returns the value after dividing the sum by the number of rows and square rooting it
+ */
 double compute_rms(const WaveformSample *Log, int rows,int phase){
  double currentValue=0;
 
@@ -13,6 +17,7 @@ double compute_rms(const WaveformSample *Log, int rows,int phase){
  }
  return sqrt(currentValue/(double)rows);
 }
+
 
 double compute_peak_to_peak(const WaveformSample *Log,int rows,int phase) {
  //for cases where the lowest value is higher than zero to work,lowest and highest is set to the first value
@@ -51,7 +56,7 @@ int count_clipped(const WaveformSample *Log,int rows,int phase) {
  return count;
 }
 
-range rangeFinder( int rows,WaveformSample *Log, size_t column) {
+range rangeFinder(WaveformSample *Log, int rows, size_t column) {
 
  //for cases where the lowest value is higher than zero to work,lowest and highest is set to the first value
  double lowest = *(double*)  ((char*)&Log[0]+column);
@@ -68,6 +73,12 @@ range rangeFinder( int rows,WaveformSample *Log, size_t column) {
  return tempRange;
 }
 
+/*        Calculates Standard deviation
+ * iterates through the field to find the sum of the values
+ * computes the mean by dividing the sum by the number of samples in that field
+ * finds the sum of the square of (each values subtracted by the mean)
+ * the sum of the squares are divided by the number of sample-1 to find variance
+ */
 double compute_std_dev(const WaveformSample *Log, int rows,int phase) {
  double sumOfVoltage=0;
 

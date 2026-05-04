@@ -14,7 +14,7 @@ typedef struct {
 
 
 
-int readingCheck(FILE *file, WaveformSample *Log, int rows);
+int readingCSV(FILE *file, WaveformSample *Log, int rows);
 
 void saveSorted(const char *filePath, WaveformSample *Log,int rows);
 

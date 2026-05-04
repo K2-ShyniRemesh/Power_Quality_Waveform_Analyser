@@ -31,12 +31,12 @@ void readingHeader(FILE *file,WaveformSample *Log) {
     }
 }
 
-int readingCheck(FILE *file,WaveformSample *Log, int rows){
+int readingCSV(FILE *file,WaveformSample *Log, int rows){
 
     readingHeader(file,Log);
 
     int lines=0;//number of fields that have been read
-    char buffer[1024];//stores values from one row
+    char buffer[sizeof(WaveformSample)*2];//stores values from one row
 
     //stores data to the instance of the struct WaveformSample created
     while (lines<rows && fgets(buffer,sizeof(buffer),file) != NULL) {
@@ -111,8 +111,9 @@ void outputReport(FILE *textFile, resultSample theResults, const uint8_t phaseHe
         fprintf(textFile, "     RMS: %.3lf V\n", theResults.rms[i]);
         fprintf(textFile, "     Peak-to-Peak: %.3lf V\n", theResults.peak2peak[i]);
         fprintf(textFile, "     DC Offset: %.3lf V\n", theResults.offset[i]);
-        fprintf(textFile, "     Clipped Count: %.3d\n", theResults.clippedCount[i]);
+        fprintf(textFile, "     Clipped Count: %d\n", theResults.clippedCount[i]);
         fprintf(textFile, "     Std Dev: %.3lf\n", theResults.stddev[i]);
+        fprintf(textFile, "     Variance: %.3lf\n", theResults.stddev[i]*theResults.stddev[i]);
 
             // Checks if the value is zero/phase is healthy
         if (phaseHealth[i] == 0)  fprintf(textFile,   "[NO CLIPPING]\n[WITHIN TOLERANCE RANGE]\n\n");
@@ -126,8 +127,8 @@ void outputReport(FILE *textFile, resultSample theResults, const uint8_t phaseHe
     }
 
     fprintf(textFile,"Frequency Range: %.3lf to %.3lf Hz\n",frequencyRange->lowest,frequencyRange->highest);
-    fprintf(textFile,"Power Factor Range: %3lf to %.3lf\n",thdRange->lowest,thdRange->highest);
-    fprintf(textFile,"THD percent Range: %.2lf%% to %.2lf%%\n",powerFactorRange->lowest,powerFactorRange->highest);
+    fprintf(textFile,"Power Factor Range: %.3lf to %.3lf\n",powerFactorRange->lowest,powerFactorRange->highest);
+    fprintf(textFile,"THD percent Range: %.2lf%% to %.2lf%%\n",thdRange->lowest,thdRange->highest);
 }
 
 void saveSorted(const char *filePath, WaveformSample *Log,int rows){

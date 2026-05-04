@@ -6,7 +6,6 @@
 #include <errno.h>
 
 //for using uint8_t
-#include <stdint.h>
 
 void processCSV(char *filePath) {
 
@@ -17,8 +16,11 @@ void processCSV(char *filePath) {
     if (file == NULL){
         if (errno==ENOENT) {
             printf("%s NOT FOUND!:   %s\n", filePath,strerror(errno));
-            return;
         }
+        else{
+            perror("ERROR: Could not open file");
+        }
+        return;
     }
 
     //NO ERROR
@@ -27,17 +29,26 @@ void processCSV(char *filePath) {
     int rows=countRows(file);//calls the function in misc.c
     rewind(file);
 
+    if (rows==0) {
+        printf("%s is empty",filePath);
+        fclose(file);
+        return;
+    }
+
     //instantiating the structure
     WaveformSample *Log = malloc(rows * sizeof(WaveformSample));
 
+
     //if there is insufficient memory to allocate to the structure
     if (Log == NULL) {
+
         printf("Memory allocation failed!\n");
         fclose(file);
         return;
     }
 
-    if (readingCheck(file,Log,rows)==0) {
+    if (readingCSV(file,Log,rows)==0) {
+        fclose(file);
 
         //calls function mergesort
         Sort(Log,rows);//function in misc.c
@@ -67,9 +78,9 @@ void processCSV(char *filePath) {
             }
         }
 
-        range frequencyRange=rangeFinder(rows,Log,offsetof(WaveformSample,frequency));
-        range thdRange=rangeFinder(rows,Log,offsetof(WaveformSample,thd_percent));
-        range powerFactorRange=rangeFinder(rows,Log,offsetof(WaveformSample,power_factor));
+        range frequencyRange=rangeFinder(Log,rows,offsetof(WaveformSample,frequency));
+        range thdRange=rangeFinder(Log,rows,offsetof(WaveformSample,thd_percent));
+        range powerFactorRange=rangeFinder(Log,rows,offsetof(WaveformSample,power_factor));
 
         //calls function to remove the extension from path
         removeExtension(filePath);
@@ -80,58 +91,66 @@ void processCSV(char *filePath) {
         //Creates the report file with permission to write
         FILE *textFile=fopen(filePath,"w");
 
-        //calling function to output the sorted file
-        if (textFile){
-            outputReport(textFile,theResults,phaseHealth,&frequencyRange,&thdRange,&powerFactorRange);
-            fclose(textFile);
-        }
         //if the file cannot be made
-        else {
-
+        if (textFile==NULL) {
+            if (errno==EACCES) {
+                perror("ERROR: No permission to Create file \nRun program as ADMIN to fix");
+            }
+            else {
+                perror("ERROR: Could not open file");
+            }
+            return;
         }
+
+        //calling function to output the sorted file
+        outputReport(textFile,theResults,phaseHealth,&frequencyRange,&thdRange,&powerFactorRange);
+        fclose(textFile);
+
         printf("%s Created\n",filePath);
         printf("Outputting Report\n");
     }
-    fclose(file);
     free(Log);
-
 }
 
 int main(int argc, char *argv[]) {
-    printf("------------------------------------------------------------------------------------------------------------------------\n");
 
     //takes user input for the file path and uses that as the argument ProcessCSV
     char inputPath[2048];
     printf("Enter the file/folder path\n");
+    scanf("%[^\n]",inputPath);
 
-    //case where the input path does not exist
-    if (scanf("%[^\n]",inputPath)!=1) {
-        printf("the ");
-    }
 
     //checks if the user input is path to folder or file
-    if (strcmp(inputPath + strlen(inputPath) - 4, ".csv") == 0) {
-
+    if (strlen(inputPath)>4 && strcmp(inputPath + strlen(inputPath) - 4, ".csv") == 0) {
         processCSV(inputPath);//function is in main.c
-        printf("------------------------------------------------------------------------------------------------------------------------\n");
     }
     else {
         DIR *directory=opendir(inputPath);
-        struct dirent *entry;
-
-        if (directory!=NULL) {
-            while ((entry = readdir(directory)) != NULL) {
-                char filePath[2048];
-                    if (strcmp(entry->d_name + strlen(entry->d_name) - 4, ".csv") == 0) {
-                        strcpy(filePath,inputPath);
-                        strcat(filePath,"/");//no check for slash included(not necessary for most OS)
-                        strcat(filePath,entry->d_name);
-                        processCSV(filePath);
-                    }
-            }
-            closedir(directory);
-            printf("------------------------------------------------------------------------------------------------------------------------\n");
+        //error handling for invalid directory
+        if (directory==NULL){
+            perror("ERROR: Could not open directory");
+            return 0;
         }
+
+        struct dirent *entry;
+        int zeroEntries=1;
+
+        while ((entry = readdir(directory)) != NULL) {
+            char filePath[2048];
+
+            if ( strlen(entry->d_name)>4 && strcmp(entry->d_name + strlen(entry->d_name) - 4, ".csv") == 0){
+                strcpy(filePath,inputPath);
+                strcat(filePath,"/");//no check for slash included(not necessary for most OS)
+                strcat(filePath,entry->d_name);
+
+                processCSV(filePath);
+                zeroEntries=0;
+            }
+        }
+        closedir(directory);
+
+        if (zeroEntries==1) printf("NO CSV FILE IN THE INPUT DIRECTORY");
     }
+    if (errno!=0) printf("%s\n",strerror(errno));
     return 0;
 }

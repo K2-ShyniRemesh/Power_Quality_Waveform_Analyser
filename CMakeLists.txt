@@ -10,3 +10,5 @@ add_executable(Power_Quality_Waveform_Analyser main.c
         io.h
         misc.c
         misc.h)
+
+target_link_libraries(Power_Quality_Waveform_Analyser m)

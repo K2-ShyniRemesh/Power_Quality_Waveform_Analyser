@@ -52,14 +52,12 @@ void removeExtension(char *filePath) {
 
 void Sort(WaveformSample *Log,int rows) {
     {
-        // Skip the header
-        WaveformSample *ptr = Log + 1;
-        int dataCount = rows - 1;
-
-        int i;
+        // Skipping the header by adding 1
+        WaveformSample *ptr = Log +1;
+        int dataCount = rows-1;
 
         // Sort the structs using pointers
-        for (i = 0; i < dataCount; i++) {
+        for (int i = 0; i < dataCount; i++) {
 
             for (int j = i + 1; j < dataCount; j++) {
 
@@ -73,9 +71,5 @@ void Sort(WaveformSample *Log,int rows) {
                 }
             }
         }
-        // Optional: print the first few sorted voltages to verify
-        for (i = 0; i < (dataCount < 5 ? dataCount : 5); i++)
-            printf("%lf ", (ptr + i)->phase_voltage[0]);
-        printf("\n");
     }
 }

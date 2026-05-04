@@ -1,4 +1,6 @@
-# Power Quality Waveform Analyser
+# Power Quality Waveform Analyser 
+
+https://github.com/K2-ShyniRemesh/Power_Quality_Waveform_Analyser.git
 
 Power Quality Waveform Analyser is program that reads real-world power quality data from a sensor log file, analyses the voltage waveforms, and produces a structured report.
 

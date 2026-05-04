@@ -30,7 +30,7 @@ void processCSV(char *filePath) {
     rewind(file);
 
     if (rows==0) {
-        printf("%s: IS EMPTY",filePath);
+        printf("%s: IS EMPTY\n\n",filePath);
         fclose(file);
         return;
     }
@@ -133,7 +133,7 @@ int main() {
         }
 
         struct dirent *entry;
-        int zeroEntries=1;
+        int zeroEntries=0;
 
         while ((entry = readdir(directory)) != NULL) {
             char filePath[2048];
@@ -144,12 +144,12 @@ int main() {
                 strcat(filePath,entry->d_name);
 
                 processCSV(filePath);
-                zeroEntries=0;
+                zeroEntries=1;
             }
         }
         closedir(directory);
 
-        if (zeroEntries==1) printf("NO CSV FILE IN THE INPUT DIRECTORY");
+        if (zeroEntries==0) printf("NO CSV FILE IN THE INPUT DIRECTORY");
     }
     if (errno!=0) printf("%s\n",strerror(errno));
 

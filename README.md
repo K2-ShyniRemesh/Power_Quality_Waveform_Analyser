@@ -33,6 +33,12 @@ Power Quality Waveform Analyser is program that reads real-world power quality d
 
 ## CMake compiling steps
 
+1.  Download the zip file of this repo
+2.  Extract the zip file
+3.  Create a new C project in Clion and set the directory to the extracted folder
+5.  Build the program
+6.  Run the program
+
 ```cmake
 cmake_minimum_required(VERSION 4.1)
 project(Power_Quality_Waveform_Analyser C)
@@ -51,5 +57,3 @@ add_executable(Power_Quality_Waveform_Analyser
 
 target_link_libraries(Power_Quality_Waveform_Analyser m)
 ```
-    1.Build the program
-    2.Run the program
